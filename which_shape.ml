@@ -187,30 +187,50 @@ let sq_all alist =
 
 let sqA alist =
 	let head = List.hd alist in
-	if head = "u"
-	then
-		let (afterU,ulen) = consec_counts alist 0 "u" in
-		let (afterR,rlen) = consec_counts afterU 0 "r" in
-		let (afterD,dlen) = consec_counts afterR 0 "d" in
-		let (afterL,llen) = consec_counts afterD 0 "l" in
+	let (afterU,ulen) = consec_counts alist 0 "u" in
+	let (afterR,rlen) = consec_counts afterU 0 "r" in
+	let (afterD,dlen) = consec_counts afterR 0 "d" in
+	let (afterL,llen) = consec_counts afterD 0 "l" in
 
-		let validR = first_el afterU "r" in
-		let validD = first_el afterR "d" in
-		let validL = first_el afterD "l" in
-		let xlen = List.length afterL in
-		
-		if validR = 1 && validD = 1 && validL = 1 &&
-			ulen = rlen && rlen = dlen && dlen = llen && xlen = 0
-		then
-			1
-		else
-			0
+	let validU = first_el alist "u" in
+	let validR = first_el afterU "r" in
+	let validD = first_el afterR "d" in
+	let validL = first_el afterD "l" in
+	let xlen = List.length afterL in
+	
+	if validR = 1 && validD = 1 && validL = 1 &&
+		ulen = rlen && rlen = dlen && dlen = llen && xlen = 0
+	then
+		1
 	else
 		0
 	;;
 
+(* eqtriA(alist)
+ * receives	alist = list to be parsed
+ * 
+ * returns	1 if list represents an equilateral triangle, 0 otherwise
+ *)
 
+let eqtriA alist = 
+	let head = List.hd alist in
 
+	let (m30list,ulen) = consec_counts alist 0 "u" in
+	let (p240list,m30len) = consec_counts m30list 0 "m30" in
+	let (rest,p240len) = consec_counts p240list 0 "p240" in
+
+	let validu = first_el alist "u" in
+	let validm30 first_el m30list "m30" in
+	let validp240 first_el p240list "p240" in
+	let xlen = List.length rest in
+
+	if validu = 1 && validm30 = 1 && validp240 = 1 &&
+		ulen = m30len && m30len = p240len & xlen = 0
+	then
+		1
+	else
+		0
+	;;
 
 
 
