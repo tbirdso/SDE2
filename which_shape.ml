@@ -142,14 +142,50 @@ let sq alist =
 		0
 	;;
 
-
 (* sq_all(alist)
  * receives	alist = list to be parsed
- * 
+ *
  * returns	1 if string represents a square, 0 otherwise
+ *
+ * note: does not check for equality of side lengths but does require entire string
+ *	to be used
  *)
 
 let sq_all alist =
+	let head = List.hd alist in
+	if head = "u"
+	then
+		let (afterU,ulen) = consec_counts alist 0 "u" in
+		let (afterR,rlen) = consec_counts afterU 0 "r" in
+		let (afterD,dlen) = consec_counts afterR 0 "d" in
+		let (afterL,llen) = consec_counts afterD 0 "l" in
+
+		let validR = first_el afterU "r" in
+		let validD = first_el afterR "d" in
+		let validL = first_el afterD "l" in
+		let xlen = List.length afterL in
+		
+		if validR = 1 && validD = 1 && validL = 1 && xlen = 0
+		then
+			1
+		else
+			0
+	else
+		0
+	;;
+
+
+
+(* sqA(alist)
+ * receives	alist = list to be parsed
+ * 
+ * returns	1 if string represents a square, 0 otherwise
+ *
+ * note: does not check for equality of side lengths but does require entire string
+ *	to be used
+ *)
+
+let sqA alist =
 	let head = List.hd alist in
 	if head = "u"
 	then
