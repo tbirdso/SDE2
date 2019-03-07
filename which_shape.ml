@@ -211,7 +211,7 @@ let sqA alist =
  * 
  * returns	1 if list represents an equilateral triangle, 0 otherwise
  *)
-
+(*
 let eqtriA alist = 
 	let head = List.hd alist in
 
@@ -231,7 +231,7 @@ let eqtriA alist =
 	else
 		0
 	;;
-
+*)
 
 
 
