@@ -72,6 +72,10 @@ let rec countups alist 0 =
  * receives	alist = list to parse for what
  * 		count = number of consecutive so far (initialized at 0)
  * 		what = thing to be counted in list
+ *
+ * returns	tuple (rest,num) where
+ *			rest = remainder of list after consecutive whats
+ *			num = number of consecutive whats
  *)
 
 let rec consec_counts alist count what =
@@ -93,5 +97,100 @@ let rec consec_counts alist count what =
 			else
 			(alist,count)
 	;;
+
+(* sq(alist)
+ * receives	alist = list to be parsed
+ * 
+ * returns	1 if string represents a square, 0 otherwise
+ *
+ * note: allows leftovers and does not require sides are same length
+ *)
+
+let first_el alist what = 
+	let len = List.length alist in
+	if len > 0
+	then
+		let head = List.hd alist in
+		if head = what
+		then
+			1
+		else
+			0
+	else
+		0
+	;;
+
+let sq alist =
+	let head = List.hd alist in
+	if head = "u"
+	then
+		let (afterU,ulen) = consec_counts alist 0 "u" in
+		let (afterR,rlen) = consec_counts afterU 0 "r" in
+		let (afterD,dlen) = consec_counts afterR 0 "d" in
+		let (afterL,llen) = consec_counts afterD 0 "l" in
+
+		let validR = first_el afterU "r" in
+		let validD = first_el afterR "d" in
+		let validL = first_el afterD "l" in
+		
+		if validR = 1 && validD = 1 && validL = 1
+		then
+			1
+		else
+			0
+	else
+		0
+	;;
+
+
+(* sq_all(alist)
+ * receives	alist = list to be parsed
+ * 
+ * returns	1 if string represents a square, 0 otherwise
+ *)
+
+let sq_all alist =
+	let head = List.hd alist in
+	if head = "u"
+	then
+		let (afterU,ulen) = consec_counts alist 0 "u" in
+		let (afterR,rlen) = consec_counts afterU 0 "r" in
+		let (afterD,dlen) = consec_counts afterR 0 "d" in
+		let (afterL,llen) = consec_counts afterD 0 "l" in
+
+		let validR = first_el afterU "r" in
+		let validD = first_el afterR "d" in
+		let validL = first_el afterD "l" in
+		let xlen = List.length afterL in
+		
+		if validR = 1 && validD = 1 && validL = 1 &&
+			ulen = rlen && rlen = dlen && dlen = llen && xlen = 0
+		then
+			1
+		else
+			0
+	else
+		0
+	;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
