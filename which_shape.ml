@@ -16,7 +16,7 @@ let rec gen_string = function(n,what) ->
 	then [what]
 	else let less = n - 1 in
 		let retList = gen_string(less,what) in
-		List.append retList [what];;
+		retList@[what];;
 
 (* gen_square(n)
  * receives	n = side length
@@ -29,7 +29,7 @@ let gen_square = function(n) ->
 	let r = gen_string(n,'r') in
 	let d = gen_string(n,'d') in
 	let l = gen_string(n,'l') in
-	List.concat [u;r;d;l];;
+	u@r@d@l;;
 
 (* gen_rect(n,m)
  * receives	n = "u" and "d" side length
@@ -43,7 +43,7 @@ let gen_rect = function(n,m) ->
 	let r = gen_string(m,'r') in
 	let d = gen_string(n,'d') in
 	let l = gen_string(m,'l') in
-	List.concat [u;r;d;l];;
+	u@r@d@l;;
 
 (* countups(alist,0)
  * receives	alist = list to parse for 'u'
@@ -232,12 +232,110 @@ let eqtriA = function (alist) ->
 		0
 	;;
 
+(* one_shift(alist)
+ * receives	alist = list to be shifted
+ * 
+ * returns	list shifted one to the left
+ *)
+
+let rec one_shift = function 
+	(h1::h2::t) ->
+		[h2]@one_shift([h1]@t)
+	| (h) -> h
+	| ([]) -> []
+	;;
+
+(* all_shifts_recurs(alist,n)
+ * receives	alist = previous cycle
+ *		n = cycles remaining (including this one)
+ *
+ * returns	list of this and all following shifts
+ *)
+
+let rec all_shifts_recurs = function 
+	(alist,0) ->
+		[]
+	| (alist,n) ->
+		let remaining = n - 1 in
+		let shift = one_shift(alist) in
+		[shift]@all_shifts_recurs(shift,remaining)
+	;;
+	
+
+(* all_shifts(alist)
+ * receives	alist = list to be shifted
+ *
+ * returns	list of all cyclic shifts of alist, not including alist
+ *)
+
+let all_shifts = function (alist) ->
+	let len = List.length alist in
+	let llen = len - 1 in
+	all_shifts_recurs(alist,llen);;
+
+(* all_cases(alist)
+ * receives 	list to be cycled
+ *
+ * returns	list of all shifts of shift
+ *)
+
+let all_cases = function (alist) ->
+	[alist]@all_shifts(alist);;
+
+(* try_all_sqA_recurs(clist)
+ * receives	clist = list of cycles to check through
+ *
+ * returns	1 if one of the cycles represents a square, 0 otherwise
+ *)
+
+let rec try_all_sqA_recurs = function
+	([]) -> 0
+	| (ch::ct) ->
+		let cycsqA = sqA(ch) in
+		if cycsqA = 1
+		then
+			1
+		else
+			try_all_sqA_recurs(ct)
+	;;
+	
 
 
+(* try_all_sqA(alist)
+ * receives	alist = list to cycle through, try to find string satisfying sqA
+ *
+ * returns	1 if some cycle of alist represents a square, 0 otherwise
+ *)
+
+let try_all_sqA = function (alist) ->
+	let cycles = all_cases(alist) in
+	try_all_sqA_recurs(cycles);;	
 
 
+(* try_all_eqtriA_recurs(clist)
+ * receives	clist = list of cycles to check through
+ * 
+ * returns	1 if some cycle in clist represents an equilateral triangle, 0 otherwise
+ *)
 
+let rec try_all_eqtriA_recurs = function
+	([]) -> 0
+	| (ch::ct) ->
+		let tri = eqtriA(ch) in
+		if tri = 1
+		then
+			1
+		else
+			try_all_eqtriA_recurs(ct)
+	;;
 
+(* try_all_eqtriA(alist)
+ * receives	alist = list to be parsed
+ *
+ * returns	1 if some cycle of alist represents an equilateral triangle, 0 otherwise
+ *)
 
-
+let try_all_eqtriA = function (alist) ->
+	let cycles = all_cases(alist) in
+	try_all_eqtriA_recurs(cycles);;
 
