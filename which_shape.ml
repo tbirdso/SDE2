@@ -52,7 +52,7 @@ let gen_rect = function(n,m) ->
  * returns	total number of 'u' in list
  *)
 
-let rec countups= function (alist,0) ->
+let rec countups= function (alist,_) ->
 	let len = List.length alist in
 	if len = 0
 	then
@@ -127,7 +127,6 @@ let sq = function (alist) ->
 		let (afterU,ulen) = consec_counts(alist,0,"u") in
 		let (afterR,rlen) = consec_counts(afterU,0,"r") in
 		let (afterD,dlen) = consec_counts(afterR,0,"d") in
-		let (afterL,llen) = consec_counts(afterD,0,"l") in
 
 		let validR = first_el(afterU,"r") in
 		let validD = first_el(afterR,"d") in
@@ -186,7 +185,6 @@ let sq_all = function (alist) ->
  *)
 
 let sqA = function (alist) ->
-	let head = List.hd alist in
 	let (afterU,ulen) = consec_counts(alist,0,"u") in
 	let (afterR,rlen) = consec_counts(afterU,0,"r") in
 	let (afterD,dlen) = consec_counts(afterR,0,"d") in
@@ -198,7 +196,7 @@ let sqA = function (alist) ->
 	let validL = first_el(afterD,"l") in
 	let xlen = List.length afterL in
 	
-	if validR = 1 && validD = 1 && validL = 1 &&
+	if validU = 1 && validR = 1 && validD = 1 && validL = 1 &&
 		ulen = rlen && rlen = dlen && dlen = llen && xlen = 0
 	then
 		1
@@ -213,8 +211,6 @@ let sqA = function (alist) ->
  *)
 
 let eqtriA = function (alist) ->
-	let head = List.hd alist in
-
 	let (m30list,ulen) = consec_counts(alist,0,"u") in
 	let (p240list,m30len) = consec_counts(m30list,0,"m30") in
 	let (rest,p240len) = consec_counts(p240list,0,"p240") in
@@ -242,7 +238,6 @@ let rec one_shift = function
 	(h1::h2::t) ->
 		[h2]@one_shift([h1]@t)
 	| (h) -> h
-	| ([]) -> []
 	;;
 
 (* all_shifts_recurs(alist,n)
