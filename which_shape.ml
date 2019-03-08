@@ -73,14 +73,9 @@ let rec countups= function
  *			num = number of consecutive whats
  *)
 
-let rec consec_counts = function (alist,count,what) ->
-	let len = List.length alist in
-	if len = 0
-	then
-		([],count)
-	else
-		let head = List.hd alist in
-		let tail = List.tl alist in
+let rec consec_counts = function 
+	([],count,_) -> ([],count)
+	| (head::tail,count,what) ->
 		if head = what
 		then
 			let cp1 = count + 1 in
@@ -88,9 +83,25 @@ let rec consec_counts = function (alist,count,what) ->
 		else
 			if count = 0
 			then
-			consec_counts(tail,0,what)
+				consec_counts(tail,0,what)
 			else
-			(alist,count)
+				([head]@tail,count)
+	;;
+
+(* first_el(alist,what) 
+ * receives	alist = list to check head
+		what = expected head value
+ *
+ * returns	1 if head is as expected, 0 otherwise
+ *)
+let first_el = function
+	([],_) -> 0
+	| (head::tail,what) -> 
+		if head = what
+		then
+			1
+		else
+			0
 	;;
 
 (* sq(alist)
@@ -100,20 +111,6 @@ let rec consec_counts = function (alist,count,what) ->
  *
  * note: allows leftovers and does not require sides are same length
  *)
-
-let first_el = function(alist,what) -> 
-	let len = List.length alist in
-	if len > 0
-	then
-		let head = List.hd alist in
-		if head = what
-		then
-			1
-		else
-			0
-	else
-		0
-	;;
 
 let sq = function (alist) ->
 	let (afterU,ulen) = consec_counts(alist,0,"u") in
@@ -273,16 +270,14 @@ let all_cases = function (alist) ->
 let rec try_all_sqA_recurs = function
 	([]) -> 0
 	| (ch::ct) ->
-		let cycsqA = sqA(ch) in
-		if cycsqA = 1
+		let case = sqA(ch) in
+		if case = 1
 		then
 			1
 		else
 			try_all_sqA_recurs(ct)
 	;;
 	
-
-
 (* try_all_sqA(alist)
  * receives	alist = list to cycle through, try to find string satisfying sqA
  *
