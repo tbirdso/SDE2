@@ -52,20 +52,15 @@ let gen_rect = function(n,m) ->
  * returns	total number of 'u' in list
  *)
 
-let rec countups= function (alist,_) ->
-	let len = List.length alist in
-	if len = 0
-	then
-		0
-	else
-		let tail = List.tl alist in
-		let tailcount = countups(tail,0) in
-		let head = List.hd alist in
-		if head = 'u'
-		then
-			tailcount + 1
-		else
-			tailcount
+let rec countups= function 
+	([],_) -> 0
+	| (head::tail,_) ->
+			let tailcount = countups(tail,0) in
+			if head = "u"
+			then
+				tailcount + 1
+			else
+				tailcount
 	;;
 
 (* consec_counts(alist,count,what)
@@ -121,22 +116,18 @@ let first_el = function(alist,what) ->
 	;;
 
 let sq = function (alist) ->
-	let head = List.hd alist in
-	if head = "u"
-	then
-		let (afterU,ulen) = consec_counts(alist,0,"u") in
-		let (afterR,rlen) = consec_counts(afterU,0,"r") in
-		let (afterD,dlen) = consec_counts(afterR,0,"d") in
+	let (afterU,ulen) = consec_counts(alist,0,"u") in
+	let (afterR,rlen) = consec_counts(afterU,0,"r") in
+	let (afterD,dlen) = consec_counts(afterR,0,"d") in
 
-		let validR = first_el(afterU,"r") in
-		let validD = first_el(afterR,"d") in
-		let validL = first_el(afterD,"l") in
-		
-		if validR = 1 && validD = 1 && validL = 1
-		then
-			1
-		else
-			0
+	let validU = first_el(alist,"u") in
+	let validR = first_el(afterU,"r") in
+	let validD = first_el(afterR,"d") in
+	let validL = first_el(afterD,"l") in
+	
+	if validU = 1 && validR = 1 && validD = 1 && validL = 1
+	then
+		1
 	else
 		0
 	;;
@@ -151,24 +142,20 @@ let sq = function (alist) ->
  *)
 
 let sq_all = function (alist) ->
-	let head = List.hd alist in
-	if head = "u"
-	then
-		let (afterU,ulen) = consec_counts(alist,0,"u") in
-		let (afterR,rlen) = consec_counts(afterU,0,"r") in
-		let (afterD,dlen) = consec_counts(afterR,0,"d") in
-		let (afterL,llen) = consec_counts(afterD,0,"l") in
+	let (afterU,ulen) = consec_counts(alist,0,"u") in
+	let (afterR,rlen) = consec_counts(afterU,0,"r") in
+	let (afterD,dlen) = consec_counts(afterR,0,"d") in
+	let (afterL,llen) = consec_counts(afterD,0,"l") in
 
-		let validR = first_el(afterU,"r") in
-		let validD = first_el(afterR,"d") in
-		let validL = first_el(afterD,"l") in
-		let xlen = List.length afterL in
-		
-		if validR = 1 && validD = 1 && validL = 1 && xlen = 0
-		then
-			1
-		else
-			0
+	let validU = first_el(alist,"u") in
+	let validR = first_el(afterU,"r") in
+	let validD = first_el(afterR,"d") in
+	let validL = first_el(afterD,"l") in
+	let xlen = List.length afterL in
+	
+	if validU = 1 && validR = 1 && validD = 1 && validL = 1 && xlen = 0
+	then
+		1
 	else
 		0
 	;;
