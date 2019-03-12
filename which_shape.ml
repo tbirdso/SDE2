@@ -173,24 +173,29 @@ let sq_all = function (alist) ->
  *)
 
 let sqA = function (alist) ->
-	let (afterU,ulen) = consec_counts(alist,0,"u") in
-	let (afterR,rlen) = consec_counts(afterU,0,"r") in
-	let (afterD,dlen) = consec_counts(afterR,0,"d") in
-	let (afterL,llen) = consec_counts(afterD,0,"l") in
 
-	let validU = first_el(alist,"u") in
-	let validR = first_el(afterU,"r") in
-	let validD = first_el(afterR,"d") in
-	let validL = first_el(afterD,"l") in
-	let xlen = List.length afterL in
-	
-	if validU = 1 && validR = 1 && validD = 1 && validL = 1 &&
-		ulen = rlen && rlen = dlen && dlen = llen && xlen = 0
+	consec_counts(alist,0,"u") |>
+	fun (afterU,ulen) ->
+		(afterU,ulen,consec_counts(afterU,0,"r")) |>
+	fun (afterU,ulen,(afterR,rlen)) ->
+		(afterU,ulen,afterR,rlen,consec_counts(afterR,0,"d")) |>
+	fun (afterU,ulen,afterR,rlen,(afterD,dlen)) ->
+		(afterU,ulen,afterR,rlen,afterD,dlen,consec_counts(afterD,0,"l")) |>
+	fun (afterU,ulen,afterR,rlen,afterD,dlen,(afterL,llen)) ->
+
+	if	first_el(alist,"u") = 1 &&
+		first_el(afterU,"r") = 1 &&
+		first_el(afterR,"d") = 1 &&
+		first_el(afterD,"l") = 1 &&
+		List.length afterL = 0 &&
+		ulen = rlen &&
+		rlen = dlen &&
+		dlen = llen
 	then
 		1
 	else
 		0
-	;;
+	;;	
 
 (* eqtriA(alist)
  * receives	alist = list to be parsed
@@ -199,17 +204,19 @@ let sqA = function (alist) ->
  *)
 
 let eqtriA = function (alist) ->
-	let (m30list,ulen) = consec_counts(alist,0,"u") in
-	let (p240list,m30len) = consec_counts(m30list,0,"m30") in
-	let (rest,p240len) = consec_counts(p240list,0,"p240") in
-
-	let validu = first_el(alist,"u") in
-	let validm30 = first_el(m30list,"m30") in
-	let validp240 = first_el(p240list,"p240") in
-	let xlen = List.length rest in
-
-	if validu = 1 && validm30 = 1 && validp240 = 1 &&
-		ulen = m30len && m30len = p240len && xlen = 0
+	consec_counts(alist,0,"u") |>
+	fun (m30list,ulen) ->
+		(m30list,ulen,consec_counts(m30list,0,"m30")) |>
+	fun (m30list,ulen,(p240list,m30len)) ->
+		(m30list,ulen,p240list,m30len,consec_counts(p240list,0,"p240")) |>
+	fun (m30list,ulen,p240list,m30len,(rest,p240len)) ->
+	
+	if first_el(alist,"u") = 1 &&
+		first_el(m30list,"m30") = 1 &&
+		first_el(p240list,"p240") = 1 &&
+		List.length rest = 0 &&
+		ulen = m30len &&
+		m30len = p240len
 	then
 		1
 	else
@@ -239,9 +246,9 @@ let rec all_shifts_recurs = function
 	(alist,0) ->
 		[]
 	| (alist,n) ->
-		let remaining = n - 1 in
-		let shift = one_shift(alist) in
-		[shift]@all_shifts_recurs(shift,remaining)
+		one_shift(alist) |>
+		fun shift ->
+			[shift]@all_shifts_recurs(shift,n-1)
 	;;
 	
 
@@ -252,9 +259,8 @@ let rec all_shifts_recurs = function
  *)
 
 let all_shifts = function (alist) ->
-	let len = List.length alist in
-	let llen = len - 1 in
-	all_shifts_recurs(alist,llen);;
+	List.length alist |>
+	fun len -> all_shifts_recurs(alist,len - 1);;
 
 (* all_cases(alist)
  * receives 	list to be cycled
@@ -274,12 +280,13 @@ let all_cases = function (alist) ->
 let rec try_all_sqA_recurs = function
 	([]) -> 0
 	| (ch::ct) ->
-		let case = sqA(ch) in
-		if case = 1
-		then
-			1
-		else
-			try_all_sqA_recurs(ct)
+		sqA(ch) |>
+		fun case ->
+			if case = 1
+			then
+				1
+			else
+				try_all_sqA_recurs(ct)
 	;;
 	
 (* try_all_sqA(alist)
@@ -289,8 +296,8 @@ let rec try_all_sqA_recurs = function
  *)
 
 let try_all_sqA = function (alist) ->
-	let cycles = all_cases(alist) in
-	try_all_sqA_recurs(cycles);;	
+	all_cases(alist) |>
+	fun cycles -> try_all_sqA_recurs(cycles);;	
 
 
 (* try_all_eqtriA_recurs(clist)
@@ -302,12 +309,13 @@ let try_all_sqA = function (alist) ->
 let rec try_all_eqtriA_recurs = function
 	([]) -> 0
 	| (ch::ct) ->
-		let tri = eqtriA(ch) in
-		if tri = 1
-		then
-			1
-		else
-			try_all_eqtriA_recurs(ct)
+		eqtriA(ch) |>
+			fun tri ->
+			if tri = 1
+			then
+				1
+			else
+				try_all_eqtriA_recurs(ct)
 	;;
 
 (* try_all_eqtriA(alist)
@@ -317,6 +325,6 @@ let rec try_all_eqtriA_recurs = function
  *)
 
 let try_all_eqtriA = function (alist) ->
-	let cycles = all_cases(alist) in
-	try_all_eqtriA_recurs(cycles);;
+	all_cases(alist) |>
+	fun cycles -> try_all_eqtriA_recurs(cycles);;
 
