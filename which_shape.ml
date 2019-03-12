@@ -14,9 +14,10 @@
 let rec gen_string = function(n,what) ->
 	if n = 1
 	then [what]
-	else let less = n - 1 in
-		let retList = gen_string(less,what) in
-		retList@[what];;
+	else 
+		n - 1 |>
+		fun less ->  gen_string(less,what) |>
+		fun retList -> retList@[what];;
 
 (* gen_square(n)
  * receives	n = side length
@@ -25,11 +26,10 @@ let rec gen_string = function(n,what) ->
  *)
 
 let gen_square = function(n) ->
-	let u = gen_string(n,'u') in
-	let r = gen_string(n,'r') in
-	let d = gen_string(n,'d') in
-	let l = gen_string(n,'l') in
-	u@r@d@l;;
+	gen_string(n,'u') |>
+	fun u -> u@gen_string(n,'r') |>
+	fun d -> d@gen_string(n,'d') |>
+	fun l -> l@ gen_string(n,'l');;
 
 (* gen_rect(n,m)
  * receives	n = "u" and "d" side length
@@ -39,11 +39,10 @@ let gen_square = function(n) ->
  *)
 
 let gen_rect = function(n,m) ->
-	let u = gen_string(n,'u') in
-	let r = gen_string(m,'r') in
-	let d = gen_string(n,'d') in
-	let l = gen_string(m,'l') in
-	u@r@d@l;;
+	gen_string(n,'u') |>
+	fun u -> u@gen_string(m,'r') |>
+	fun r -> r@gen_string(n,'d') |>
+	fun l -> l@gen_string(m,'l');;
 
 (* countups(alist,0)
  * receives	alist = list to parse for 'u'
@@ -55,7 +54,8 @@ let gen_rect = function(n,m) ->
 let rec countups= function 
 	([],_) -> 0
 	| (head::tail,_) ->
-			let tailcount = countups(tail,0) in
+		countups(tail,0) |>
+		fun (tailcount) ->
 			if head = "u"
 			then
 				tailcount + 1
@@ -78,7 +78,8 @@ let rec consec_counts = function
 	| (head::tail,count,what) ->
 		if head = what
 		then
-			let cp1 = count + 1 in
+			count + 1 |>
+			fun cp1 ->
 			consec_counts(tail,cp1,what)
 		else
 			if count = 0
@@ -113,16 +114,17 @@ let first_el = function
  *)
 
 let sq = function (alist) ->
-	let (afterU,ulen) = consec_counts(alist,0,"u") in
-	let (afterR,rlen) = consec_counts(afterU,0,"r") in
-	let (afterD,dlen) = consec_counts(afterR,0,"d") in
+	consec_counts(alist,0,"u") |>
+	fun (afterU,uLen) ->
+		(afterU,uLen,consec_counts(afterU,0,"r")) |>
+	fun (afterU,uLen,(afterR,rlen)) ->
+		(afterU,uLen,afterR,rlen,consec_counts(afterR,0,"d")) |>
+	fun(afterU,uLen,afterR,rlen,(afterD,dlen)) ->
 
-	let validU = first_el(alist,"u") in
-	let validR = first_el(afterU,"r") in
-	let validD = first_el(afterR,"d") in
-	let validL = first_el(afterD,"l") in
-	
-	if validU = 1 && validR = 1 && validD = 1 && validL = 1
+	if first_el(alist,"u") = 1 &&
+		first_el(afterU,"r") = 1 &&
+		first_el(afterR,"d") = 1 &&
+		first_el(afterD,"l") = 1
 	then
 		1
 	else
@@ -139,18 +141,20 @@ let sq = function (alist) ->
  *)
 
 let sq_all = function (alist) ->
-	let (afterU,ulen) = consec_counts(alist,0,"u") in
-	let (afterR,rlen) = consec_counts(afterU,0,"r") in
-	let (afterD,dlen) = consec_counts(afterR,0,"d") in
-	let (afterL,llen) = consec_counts(afterD,0,"l") in
+	consec_counts(alist,0,"u") |>
+	fun (afterU,_) ->
+		(afterU,consec_counts(afterU,0,"r")) |>
+	fun (afterU,(afterR,_)) ->
+		(afterU,afterR,consec_counts(afterR,0,"d")) |>
+	fun (afterU,afterR,(afterD,_)) ->
+		(afterU,afterR,afterD,consec_counts(afterD,0,"l")) |>
+	fun (afterU,afterR,afterD,(afterL,_)) ->
 
-	let validU = first_el(alist,"u") in
-	let validR = first_el(afterU,"r") in
-	let validD = first_el(afterR,"d") in
-	let validL = first_el(afterD,"l") in
-	let xlen = List.length afterL in
-	
-	if validU = 1 && validR = 1 && validD = 1 && validL = 1 && xlen = 0
+	if	first_el(alist,"u") = 1 &&
+		first_el(afterU,"r") = 1 &&
+		first_el(afterR,"d") = 1 &&
+		first_el(afterD,"l") = 1 &&
+		List.length afterL = 0
 	then
 		1
 	else
