@@ -26,10 +26,10 @@ let rec gen_string = function(n,what) ->
  *)
 
 let gen_square = function(n) ->
-	gen_string(n,'u') |>
-	fun u -> u@gen_string(n,'r') |>
-	fun d -> d@gen_string(n,'d') |>
-	fun l -> l@ gen_string(n,'l');;
+	gen_string(n,"u") |>
+	fun u -> u@gen_string(n,"r") |>
+	fun d -> d@gen_string(n,"d") |>
+	fun l -> l@ gen_string(n,"l");;
 
 (* gen_rect(n,m)
  * receives	n = "u" and "d" side length
@@ -39,10 +39,10 @@ let gen_square = function(n) ->
  *)
 
 let gen_rect = function(n,m) ->
-	gen_string(n,'u') |>
-	fun u -> u@gen_string(m,'r') |>
-	fun r -> r@gen_string(n,'d') |>
-	fun l -> l@gen_string(m,'l');;
+	gen_string(n,"u") |>
+	fun u -> u@gen_string(m,"r") |>
+	fun r -> r@gen_string(n,"d") |>
+	fun l -> l@gen_string(m,"l");;
 
 (* countups(alist,0)
  * receives	alist = list to parse for 'u'
@@ -82,28 +82,9 @@ let rec consec_counts = function
 			fun cp1 ->
 			consec_counts(tail,cp1,what)
 		else
-			if count = 0
-			then
-				consec_counts(tail,0,what)
-			else
-				([head]@tail,count)
+			([head]@tail,count)
 	;;
 
-(* first_el(alist,what) 
- * receives	alist = list to check head
-		what = expected head value
- *
- * returns	1 if head is as expected, 0 otherwise
- *)
-let first_el = function
-	([],_) -> 0
-	| (head::tail,what) -> 
-		if head = what
-		then
-			1
-		else
-			0
-	;;
 
 (* sq(alist)
  * receives	alist = list to be parsed
@@ -115,20 +96,18 @@ let first_el = function
 
 let sq = function (alist) ->
 	consec_counts(alist,0,"u") |>
-	fun (afterU,uLen) ->
-		(afterU,uLen,consec_counts(afterU,0,"r")) |>
-	fun (afterU,uLen,(afterR,rlen)) ->
-		(afterU,uLen,afterR,rlen,consec_counts(afterR,0,"d")) |>
-	fun(afterU,uLen,afterR,rlen,(afterD,dlen)) ->
+	fun (afterU,ulen) ->
+		(afterU,ulen,consec_counts(afterU,0,"r")) |>
+	fun (afterU,ulen,(afterR,rlen)) ->
+		(afterU,ulen,afterR,rlen,consec_counts(afterR,0,"d")) |>
+	fun(afterU,ulen,afterR,rlen,(afterD,dlen)) ->
+		(afterU,ulen,afterR,rlen,afterD,dlen,consec_counts(afterD,0,"l")) |>
+	fun (afterU,ulen,afterR,rlen,afterD,dlen,(afterL,llen)) ->
 
-	if first_el(alist,"u") = 1 &&
-		first_el(afterU,"r") = 1 &&
-		first_el(afterR,"d") = 1 &&
-		first_el(afterD,"l") = 1
-	then
-		1
-	else
-		0
+	ulen > 0 &&
+	rlen > 0 &&
+	dlen > 0 &&
+	llen > 0
 	;;
 
 (* sq_all(alist)
@@ -142,23 +121,19 @@ let sq = function (alist) ->
 
 let sq_all = function (alist) ->
 	consec_counts(alist,0,"u") |>
-	fun (afterU,_) ->
-		(afterU,consec_counts(afterU,0,"r")) |>
-	fun (afterU,(afterR,_)) ->
-		(afterU,afterR,consec_counts(afterR,0,"d")) |>
-	fun (afterU,afterR,(afterD,_)) ->
-		(afterU,afterR,afterD,consec_counts(afterD,0,"l")) |>
-	fun (afterU,afterR,afterD,(afterL,_)) ->
+	fun (afterU,ulen) ->
+		(ulen,consec_counts(afterU,0,"r")) |>
+	fun (ulen,(afterR,rlen)) ->
+		(ulen,rlen,consec_counts(afterR,0,"d")) |>
+	fun (ulen,rlen,(afterD,dlen)) ->
+		(ulen,rlen,dlen,consec_counts(afterD,0,"l")) |>
+	fun (ulen,rlen,dlen,(afterL,llen)) ->
 
-	if	first_el(alist,"u") = 1 &&
-		first_el(afterU,"r") = 1 &&
-		first_el(afterR,"d") = 1 &&
-		first_el(afterD,"l") = 1 &&
-		List.length afterL = 0
-	then
-		1
-	else
-		0
+	ulen > 0 &&
+	rlen > 0 &&
+	dlen > 0 &&
+	llen > 0 &&
+	List.length afterL = 0
 	;;
 
 
@@ -176,25 +151,18 @@ let sqA = function (alist) ->
 
 	consec_counts(alist,0,"u") |>
 	fun (afterU,ulen) ->
-		(afterU,ulen,consec_counts(afterU,0,"r")) |>
-	fun (afterU,ulen,(afterR,rlen)) ->
-		(afterU,ulen,afterR,rlen,consec_counts(afterR,0,"d")) |>
-	fun (afterU,ulen,afterR,rlen,(afterD,dlen)) ->
-		(afterU,ulen,afterR,rlen,afterD,dlen,consec_counts(afterD,0,"l")) |>
-	fun (afterU,ulen,afterR,rlen,afterD,dlen,(afterL,llen)) ->
+		(ulen,consec_counts(afterU,0,"r")) |>
+	fun (ulen,(afterR,rlen)) ->
+		(ulen,rlen,consec_counts(afterR,0,"d")) |>
+	fun (ulen,rlen,(afterD,dlen)) ->
+		(ulen,rlen,dlen,consec_counts(afterD,0,"l")) |>
+	fun (ulen,rlen,dlen,(afterL,llen)) ->
 
-	if	first_el(alist,"u") = 1 &&
-		first_el(afterU,"r") = 1 &&
-		first_el(afterR,"d") = 1 &&
-		first_el(afterD,"l") = 1 &&
-		List.length afterL = 0 &&
-		ulen = rlen &&
-		rlen = dlen &&
-		dlen = llen
-	then
-		1
-	else
-		0
+	ulen > 0 &&
+	rlen = ulen &&
+	dlen = ulen &&
+	llen = ulen &&
+	List.length afterL = 0
 	;;	
 
 (* eqtriA(alist)
@@ -206,21 +174,15 @@ let sqA = function (alist) ->
 let eqtriA = function (alist) ->
 	consec_counts(alist,0,"u") |>
 	fun (m30list,ulen) ->
-		(m30list,ulen,consec_counts(m30list,0,"m30")) |>
-	fun (m30list,ulen,(p240list,m30len)) ->
-		(m30list,ulen,p240list,m30len,consec_counts(p240list,0,"p240")) |>
-	fun (m30list,ulen,p240list,m30len,(rest,p240len)) ->
-	
-	if first_el(alist,"u") = 1 &&
-		first_el(m30list,"m30") = 1 &&
-		first_el(p240list,"p240") = 1 &&
-		List.length rest = 0 &&
-		ulen = m30len &&
-		m30len = p240len
-	then
-		1
-	else
-		0
+		(ulen,consec_counts(m30list,0,"m30")) |>
+	fun (ulen,(p240list,m30len)) ->
+		(ulen,m30len,consec_counts(p240list,0,"p240")) |>
+	fun (ulen,m30len,(rest,p240len)) ->
+
+	ulen > 0 &&
+	m30len = ulen &&
+	p240len = ulen &&
+	List.length rest = 0
 	;;
 
 (* one_shift(alist)
@@ -278,15 +240,13 @@ let all_cases = function (alist) ->
  *)
 
 let rec try_all_sqA_recurs = function
-	([]) -> 0
+	([]) -> false
 	| (ch::ct) ->
-		sqA(ch) |>
-		fun case ->
-			if case = 1
-			then
-				1
-			else
-				try_all_sqA_recurs(ct)
+		if sqA(ch) 
+		then
+			true
+		else
+			try_all_sqA_recurs(ct)
 	;;
 	
 (* try_all_sqA(alist)
@@ -307,15 +267,13 @@ let try_all_sqA = function (alist) ->
  *)
 
 let rec try_all_eqtriA_recurs = function
-	([]) -> 0
+	([]) -> false
 	| (ch::ct) ->
-		eqtriA(ch) |>
-			fun tri ->
-			if tri = 1
-			then
-				1
-			else
-				try_all_eqtriA_recurs(ct)
+		if eqtriA(ch)
+		then
+			true
+		else
+			try_all_eqtriA_recurs(ct)
 	;;
 
 (* try_all_eqtriA(alist)
