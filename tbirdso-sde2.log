@@ -1,0 +1,92 @@
+Script started on Wed 13 Mar 2019 05:27:49 PM EDT
+tbirdso@apollo05:~/ece352/SDE2$ ocaml
+        OCaml version 4.01.0
+
+# #use "which_shape.caml";;
+val gen_string : int * 'a -> 'a list = <fun>
+val gen_square : int -> string list = <fun>
+val gen_rect : int * int -> string list = <fun>
+val countups : string list * int -> int = <fun>
+val consec_counts : 'a list * int * 'a -> 'a list * int = <fun>
+val sq : string list -> bool = <fun>
+val sq_all : string list -> bool = <fun>
+val sqA : string list -> bool = <fun>
+val eqtriA : string list -> bool = <fun>
+val one_shift : 'a list -> 'a list = <fun>
+val all_shifts_recurs : 'a list * int -> 'a list list = <fun>
+val all_shifts : 'a list -> 'a list list = <fun>
+val all_cases : 'a list -> 'a list list = <fun>
+val try_all_sqA_recurs : string list list -> bool = <fun>
+val try_all_sqA : string list -> bool = <fun>
+val try_all_eqtriA_recurs : string list list -> bool = <fun>
+val try_all_eqtriA : string list -> bool = <fun>
+# gen_string(2,'A');;
+- : char list = ['A'; 'A']
+# gen_string(6,"c");;
+- : string list = ["c"; "c"; "c"; "c"; "c"; "c"]
+# gen_square(5);;
+- : string list =
+["u"; "u"; "u"; "u"; "u"; "r"; "r"; "r"; "r"; "r"; "d"; "d"; "d"; "d"; "d";
+ "l"; "l"; "l"; "l"; "l"]
+# gen_square(1);;
+- : string list = ["u"; "r"; "d"; "l"]
+# gen_rect(3,2);;
+- : string list = ["u"; "u"; "u"; "r"; "r"; "d"; "d"; "d"; "l"; "l"]
+# gen_rect(4,5);;
+- : string list =
+["u"; "u"; "u"; "u"; "r"; "r"; "r"; "r"; "r"; "d"; "d"; "d"; "d"; "l"; "l";
+ "l"; "l"; "l"]
+# countups(["u";"a";"u"],0);;
+- : int = 2
+# countups(["a";"b";"c";],0);;
+- : int = 0
+# consec_counts(["a";"b";"c"],0,"a");;
+- : string list * int = (["b"; "c"], 1)
+# consec_counts(["u";"u";"u";"l";"u"],0,"u");;
+- : string list * int = (["l"; "u"], 3)
+# sq(["u";"r";"d";"l";"u"]);;
+- : bool = true
+# sq(["u";"u";"u";"r";"d";"l"]);;
+- : bool = true
+# sq_all(["u";"u";"r";"r";"d";"l"]);;
+- : bool = true
+# sq_all(["u";"u";"r";"d";"l";"u"]);;
+- : bool = false
+# sqA(["u";"r";"d";"l"]);;
+- : bool = true
+# sqA(["u";"u";"r";"d";"l"]);;
+- : bool = false
+# eqtriA(["u";"m30";"p240"]);;
+- : bool = true
+# eqtriA(["u";"u";"m30";"p240"]);;
+- : bool = false
+# one_shift([1;2;3;4;5]);;
+- : int list = [2; 3; 4; 5; 1]
+# one_shift(["a";"b";"c";"d";"e";"f";"g"]);;
+- : string list = ["b"; "c"; "d"; "e"; "f"; "g"; "a"]
+# all_shifts(["a";"b";"c"]);;
+- : string list list = [["b"; "c"; "a"]; ["c"; "a"; "b"]]
+# all_shifts([1;2;3;4;5]);;
+- : int list list =
+[[2; 3; 4; 5; 1]; [3; 4; 5; 1; 2]; [4; 5; 1; 2; 3]; [5; 1; 2; 3; 4]]
+# all_cases([1;2;3]);;
+- : int list list = [[1; 2; 3]; [2; 3; 1]; [3; 1; 2]]
+# all_cases(["a";"b";"c"]);;
+- : string list list = [["a"; "b"; "c"]; ["b"; "c"; "a"]; ["c"; "a"; "b"]]
+# try_all_sqA(["r";"d";"l";"u"]);;
+- : bool = true
+# try_all_sqA(["r";"r";"d";"d";"l";"l";"u";"u"]);;
+- : bool = true
+# try_all_eqtriA(["m30";"p240";"u"]);;
+- : bool = true
+# try_all_eqtriA(["u";"u";"m30";"m30"]);;
+- : bool = false
+# ^Z
+[1]+  Stopped                 ocaml
+tbirdso@apollo05:~/ece352/SDE2$ exit
+exit
+There are stopped jobs.
+tbirdso@apollo05:~/ece352/SDE2$ exit
+exit
+
+Script done on Wed 13 Mar 2019 05:37:15 PM EDT
